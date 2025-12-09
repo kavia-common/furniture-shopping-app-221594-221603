@@ -10,53 +10,126 @@ export default Blits.Component('Home', {
   components: { Header, ProductCard, FloatingCartButton, CheckoutModal },
   template: `
     <Element :w="$w" :h="$h" :color="0xf9fafbff">
-      <Header :title="'Ocean Furniture'" />
-      <Element x="32" :y="132" :w="$w - 64" :h="$h - 164" :color="0x00000000">
-        <Text x="0" y="0" :content="$loading ? 'Loading...' : ''" size="32" :color="0x111827ff" />
-        <Text x="0" y="0" :content="$error ? ('Error: ' + $error) : ''" size="28" :color="0xef4444ff" />
+      <Header :title="$headerTitle" />
+      <Element :x="$contentX" :y="$contentY" :w="$contentW" :h="$contentH" :color="0x00000000">
+        <Text :x="$loadingX" :y="$loadingY" :content="$loadingText" size="32" :color="$loadingColor" />
+        <Text :x="$errorX" :y="$errorY" :content="$errorText" size="28" :color="$errorColor" />
+        <Element :alpha="$showEmpty ? 1 : 0" :x="$emptyX" :y="$emptyY" :w="$emptyW" :h="$emptyH" :color="$emptyBg">
+          <Text :x="$emptyTextX" :y="$emptyTextY" :content="$emptyText" size="30" :color="$emptyTextColor" />
+        </Element>
 
-        <Element :for="(it, index) in $layoutItems" :key="$item.id" :x="$it.x" :y="$it.y">
+        <Element :for="(it, index) in $layoutItems" :key="$it.id" :x="$it.x" :y="$it.y">
           <ProductCard :item="$it" />
         </Element>
       </Element>
 
       <FloatingCartButton />
-      <CheckoutModal :alpha="$checkoutOpen ? 1 : 0" />
+      <CheckoutModal :alpha="$checkoutAlpha" />
     </Element>
   `,
   state() {
+    // Precompute layout tokens and simple strings for template bindings only
+    const headerTitle = 'Ocean Furniture'
+    const contentX = 32
+    const contentY = 132
+    const contentPadW = 64
+    const contentPadH = 164
+
     return {
-      loading: false,
-      error: null,
+      // ui tokens
+      headerTitle,
+      contentX, contentY,
+      contentPadW, contentPadH,
+      contentW: 0,
+      contentH: 0,
+
+      // loading/error/empty precomputed strings and positions
+      loadingText: '',
+      loadingX: 0, loadingY: 0,
+      loadingColor: 0x111827ff,
+
+      errorText: '',
+      errorX: 0, errorY: 40,
+      errorColor: 0xef4444ff,
+
+      showEmpty: false,
+      emptyText: 'No products available',
+      emptyTextColor: 0x111827ff,
+      emptyBg: 0xffffffff,
+      emptyX: 0, emptyY: 90, emptyW: 600, emptyH: 100,
+      emptyTextX: 20, emptyTextY: 30,
+
+      // data
       products: [],
       layoutItems: [],
-      checkoutOpen: false
+
+      // modal flag -> precomputed alpha for template
+      checkoutOpen: false,
+      checkoutAlpha: 0
     }
   },
   watchers: {
+    // adjust content dimensions when app size is known
+    w(newW) {
+      if (typeof newW === 'number') {
+        this.contentW = newW - this.contentPadW
+      }
+    },
+    h(newH) {
+      if (typeof newH === 'number') {
+        this.contentH = newH - this.contentPadH
+      }
+    },
+    // reflect loading and error from store by computing strings (no ternaries in template)
     products(newVal) {
+      // Grid positioning precomputed in script
       const colW = theme.sizes.productCardW + 30
       const rowH = theme.sizes.productCardH + 30
       const cols = 3
-      const laid = newVal.map((p, i) => {
+      const laid = (newVal || []).map((p, i) => {
         const col = i % cols
         const row = Math.floor(i / cols)
-        return { ...p, x: col * colW, y: 40 + row * rowH }
+        return { id: p.id, name: p.name, price: p.price, image: p.image, x: col * colW, y: 40 + row * rowH }
       })
       this.layoutItems = laid
+
+      // empty state visibility
+      this.showEmpty = (Array.isArray(newVal) && newVal.length === 0)
+    },
+    // compute modal alpha
+    checkoutOpen(isOpen) {
+      this.checkoutAlpha = isOpen ? 1 : 0
     }
   },
   subscriptions() {
     return [
       AppStore.subscribe(() => {
-        this.loading = AppStore.state.loading
-        this.error = AppStore.state.error
+        // Update data
         this.products = AppStore.state.products
-        this.checkoutOpen = AppStore.state.checkoutOpen
+
+        // Loading text
+        if (AppStore.state.loading) {
+          this.loadingText = 'Loading products...'
+          this.loadingX = 0
+          this.loadingY = 0
+        } else {
+          this.loadingText = ''
+        }
+
+        // Error text
+        const e = AppStore.state.error
+        this.errorText = e ? ('Error: ' + String(e)) : ''
+
+        // Checkout state
+        this.checkoutOpen = !!AppStore.state.checkoutOpen
       })
     ]
   },
   async onInit() {
+    // initialize dimensions based on initial w/h
+    this.$watchers.w && this.$watchers.w.call(this, this.$w)
+    this.$watchers.h && this.$watchers.h.call(this, this.$h)
+
     if (!AppStore.state.products || AppStore.state.products.length === 0) {
       await AppStore.loadProducts()
     } else {
