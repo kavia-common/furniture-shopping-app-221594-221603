@@ -7,6 +7,10 @@ import CartPage from './pages/CartPage'
  * PUBLIC_INTERFACE
  * Root Application for the Furniture Shopping App.
  * Defines routes and renders via <RouterView />.
+ * Routes:
+ *  - '/' -> Home
+ *  - '/product/:id' -> ProductDetail (receives prop: id)
+ *  - '/cart' -> CartPage
  */
 export default Blits.Application({
   template: `
@@ -29,6 +33,7 @@ export default Blits.Application({
     this.hasError = true
     // PUBLIC_INTERFACE: log error for debugging environments
     try { console.error('App error:', e) } catch { /* ignore logging errors */ }
-    setTimeout(() => { this.hasError = false }, 2000)
+    // restore UI after brief time
+    this.$setTimeout(() => { this.hasError = false }, 2000)
   }
 })

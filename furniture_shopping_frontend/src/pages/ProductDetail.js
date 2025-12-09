@@ -9,7 +9,7 @@ export default Blits.Component('ProductDetail', {
   template: `
     <Element :w="$w" :h="$h" :color="0xf9fafbff">
       <Header :title="'Product Details'" />
-      <Element x="32" :y="132" :w="$w - 64" :h="$h - 164" :color="0x00000000">
+      <Element x="32" :y="132" :w="$contentW" :h="$contentH" :color="0x00000000">
         <Element x="0" y="0" w="700" h="500" :color="0xffffffff">
           <Element :src="$imgSrc" w="700" h="500" />
         </Element>
@@ -31,18 +31,34 @@ export default Blits.Component('ProductDetail', {
       imgSrc: '',
       title: '',
       priceStr: '$0',
-      desc: ''
+      desc: '',
+      contentW: 0,
+      contentH: 0
     }
   },
   watchers: {
+    w(newW) {
+      if (typeof newW === 'number') {
+        this.contentW = newW - 64
+      }
+    },
+    h(newH) {
+      if (typeof newH === 'number') {
+        this.contentH = newH - 164
+      }
+    },
     product(p) {
       this.imgSrc = p && p.image ? p.image : ''
       this.title = p && p.name ? p.name : ''
-      this.priceStr = p && p.price ? ('$' + p.price) : '$0'
+      this.priceStr = p && p.price != null ? ('$' + p.price) : '$0'
       this.desc = p && p.description ? p.description : ''
     }
   },
   async onInit() {
+    // initialize layout sizes
+    this.$watchers.w && this.$watchers.w.call(this, this.$w)
+    this.$watchers.h && this.$watchers.h.call(this, this.$h)
+
     if (!AppStore.state.products || AppStore.state.products.length === 0) {
       await AppStore.loadProducts()
     }
