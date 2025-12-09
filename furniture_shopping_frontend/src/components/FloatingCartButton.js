@@ -3,19 +3,36 @@ import theme from '../theme'
 import { AppStore } from '../store'
 
 export default Blits.Component('FloatingCartButton', {
-  template: `
-    <Element :x="$w - 120" :y="$h - 140" w="100" h="100" :color="${theme.colors.primary}" @enter="$goCart">
-      <Text x="28" y="28" :content="'🛒'" size="44" :color="${theme.colors.surface}" />
-      <Element x="64" y="8" w="28" h="28" :color="${theme.colors.secondary}">
-        <Text x="6" y="3" :content="$countStr" size="20" :color="${theme.colors.surface}" />
-      </Element>
-    </Element>
-  `,
   state() {
     return {
+      // visual constants to avoid inline literals in template bindings
+      btnW: 100,
+      btnH: 100,
+      offsetX: 120,
+      offsetY: 140,
+      iconX: 28,
+      iconY: 28,
+      badgeX: 64,
+      badgeY: 8,
+      badgeW: 28,
+      badgeH: 28,
+      badgeTextX: 6,
+      badgeTextY: 3,
+      primary: theme.colors.primary,
+      surface: theme.colors.surface,
+      secondary: theme.colors.secondary,
+      // dynamic data
       countStr: '0'
     }
   },
+  template: `
+    <Element :x="$w - $offsetX" :y="$h - $offsetY" :w="$btnW" :h="$btnH" :color="$primary" @enter="$goCart">
+      <Text :x="$iconX" :y="$iconY" :content="'🛒'" size="44" :color="$surface" />
+      <Element :x="$badgeX" :y="$badgeY" :w="$badgeW" :h="$badgeH" :color="$secondary">
+        <Text :x="$badgeTextX" :y="$badgeTextY" :content="$countStr" size="20" :color="$surface" />
+      </Element>
+    </Element>
+  `,
   subscriptions() {
     return [
       AppStore.subscribe(() => {
