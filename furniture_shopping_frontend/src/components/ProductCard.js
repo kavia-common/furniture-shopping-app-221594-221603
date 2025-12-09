@@ -55,7 +55,11 @@ export default Blits.Component('ProductCard', {
     <Element :w="$cardW" :h="$cardH" :color="$surface" :alpha="$alphaVal">
       <Element x="0" y="0" :w="$cardW" :h="$imgH" :color="$bgColor">
         <Element x="0" y="0" :w="$cardW" :h="$imgH">
-          <Element :src="$imageSrc" :w="$cardW" :h="$imgH" />
+          <!-- If image is available, render it; otherwise, draw a solid placeholder block -->
+          <Element :alpha="$imageSrc ? 1 : 0" :src="$imageSrc" :w="$cardW" :h="$imgH" />
+          <Element :alpha="$imageSrc ? 0 : 1" :w="$cardW" :h="$imgH" :color="0x2563EB22">
+            <Text x="20" y="20" :content="$nameText || 'Product'" size="24" :color="0x111827ff" />
+          </Element>
         </Element>
       </Element>
       <Text x="20" :y="$nameY" :content="$nameText" :color="$textColor" size="28" />

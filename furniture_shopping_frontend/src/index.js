@@ -5,6 +5,7 @@ import App from './App'
  * PUBLIC_INTERFACE
  * Launch the Furniture Shopping App.
  * This bootstraps the Lightning Blits application into the HTML element with id="app".
+ * Ensure index.html contains <div id="app"></div> for successful mounting.
  * Ensures sane defaults for width/height and desktop key mappings.
  */
 Blits.Launch(App, 'app', {
