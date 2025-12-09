@@ -3,23 +3,26 @@ import Header from '../components/Header'
 import FloatingCartButton from '../components/FloatingCartButton'
 import { AppStore } from '../store'
 
+/**
+ * PUBLIC_INTERFACE
+ * Product detail page with safe template bindings only.
+ */
 export default Blits.Component('ProductDetail', {
   components: { Header, FloatingCartButton },
-  // PUBLIC_INTERFACE
   props: ['id'],
   template: `
-    <Element :w="$w" :h="$h" :color="0xf9fafbff">
-      <Header :title="'Product Details'" />
-      <Element x="32" :y="132" :w="$contentW" :h="$contentH" :color="0x00000000">
-        <Element x="0" y="0" w="700" h="500" :color="0xffffffff">
-          <Element :src="$imgSrc" w="700" h="500" />
+    <Element :w="$w" :h="$h" :color="$bg">
+      <Header :title="$headerTitle" />
+      <Element :x="$contentX" :y="$contentY" :w="$contentW" :h="$contentH" :color="0x00000000">
+        <Element :x="$imageX" :y="$imageY" :w="$imageW" :h="$imageH" :color="$surface">
+          <Element :src="$imgSrc" :w="$imageW" :h="$imageH" />
         </Element>
-        <Element x="740" y="0" w="800" h="500" :color="0xffffffff">
-          <Text x="20" y="20" :content="$title" size="40" :color="0x111827ff" />
-          <Text x="20" y="80" :content="$priceStr" size="36" :color="0x2563ebff" />
-          <Text x="20" y="140" :content="$desc" size="28" :color="0x111827ff" />
-          <Element x="20" y="360" w="280" h="64" :color="0xf59e0bff" @enter="$add">
-            <Text x="20" y="16" :content="'Add to Cart'" size="28" :color="0xffffffff" />
+        <Element :x="$detailsX" :y="$detailsY" :w="$detailsW" :h="$detailsH" :color="$surface">
+          <Text :x="$titleX" :y="$titleY" :content="$title" :size="$titleSize" :color="$titleColor" />
+          <Text :x="$priceX" :y="$priceY" :content="$priceStr" :size="$priceSize" :color="$priceColor" />
+          <Text :x="$descX" :y="$descY" :content="$desc" :size="$descSize" :color="$descColor" />
+          <Element :x="$addX" :y="$addY" :w="$addW" :h="$addH" :color="$ctaBg" @enter="$add">
+            <Text :x="$addTextX" :y="$addTextY" :content="$addText" :size="$addSize" :color="$ctaText" />
           </Element>
         </Element>
       </Element>
@@ -28,26 +31,66 @@ export default Blits.Component('ProductDetail', {
   `,
   state() {
     return {
+      // colors
+      bg: 0xf9fafbff,
+      surface: 0xffffffff,
+      titleColor: 0x111827ff,
+      priceColor: 0x2563ebff,
+      descColor: 0x111827ff,
+      ctaBg: 0xf59e0bff,
+      ctaText: 0xffffffff,
+
+      // header
+      headerTitle: 'Product Details',
+
+      // layout
+      contentX: 32,
+      contentY: 132,
+      contentW: 0,
+      contentH: 0,
+
+      imageX: 0,
+      imageY: 0,
+      imageW: 700,
+      imageH: 500,
+
+      detailsX: 740,
+      detailsY: 0,
+      detailsW: 800,
+      detailsH: 500,
+
+      titleX: 20,
+      titleY: 20,
+      titleSize: 40,
+
+      priceX: 20,
+      priceY: 80,
+      priceSize: 36,
+
+      descX: 20,
+      descY: 140,
+      descSize: 28,
+
+      addX: 20,
+      addY: 360,
+      addW: 280,
+      addH: 64,
+      addTextX: 20,
+      addTextY: 16,
+      addSize: 28,
+      addText: 'Add to Cart',
+
+      // product fields
       product: null,
       imgSrc: '',
       title: '',
       priceStr: '$0',
       desc: '',
-      contentW: 0,
-      contentH: 0
     }
   },
   watchers: {
-    w(newW) {
-      if (typeof newW === 'number') {
-        this.contentW = newW - 64
-      }
-    },
-    h(newH) {
-      if (typeof newH === 'number') {
-        this.contentH = newH - 164
-      }
-    },
+    w(newW) { if (typeof newW === 'number') this.contentW = newW - 64 },
+    h(newH) { if (typeof newH === 'number') this.contentH = newH - 164 },
     product(p) {
       this.imgSrc = p && p.image ? p.image : ''
       this.title = p && p.name ? p.name : ''
@@ -56,7 +99,6 @@ export default Blits.Component('ProductDetail', {
     }
   },
   async onInit() {
-    // initialize layout sizes
     this.$watchers.w && this.$watchers.w.call(this, this.$w)
     this.$watchers.h && this.$watchers.h.call(this, this.$h)
 

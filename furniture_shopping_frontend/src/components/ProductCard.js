@@ -17,6 +17,7 @@ export default Blits.Component('ProductCard', {
       surface: 0xffffffff,
       primary: theme.colors.primary,
       textColor: theme.colors.text,
+      white: 0xffffffff,
 
       // Precomputed layout positions
       nameY: theme.sizes.productImageH + 20,
@@ -45,10 +46,10 @@ export default Blits.Component('ProductCard', {
   },
   template: `
     <Element :w="$cardW" :h="$cardH" :color="$surface">
-      <Element x="0" y="0" :w="$cardW" :h="$imgH" :color="0xffffffff">
+      <Element x="0" y="0" :w="$cardW" :h="$imgH" :color="$white">
         <Element :alpha="$hasImage" :src="$imageSrc" :w="$cardW" :h="$imgH" />
         <Element :alpha="$placeholderAlpha" :w="$cardW" :h="$imgH" :color="$primary">
-          <Text x="20" y="20" :content="$nameText" size="26" :color="0xffffffff" />
+          <Text x="20" y="20" :content="$nameText" size="26" :color="$white" />
         </Element>
       </Element>
       <Text x="20" :y="$nameY" :content="$nameText" size="28" :color="$textColor" />
