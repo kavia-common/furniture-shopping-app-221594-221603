@@ -1,5 +1,5 @@
 import Blits from '@lightningjs/blits'
-import theme from '../theme'
+import theme from '../theme.js'
 
 /**
  * PUBLIC_INTERFACE

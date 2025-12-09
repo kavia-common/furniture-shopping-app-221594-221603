@@ -1,5 +1,5 @@
 import Blits from '@lightningjs/blits'
-import App from './App'
+import App from './App.js'
 
 /**
  * PUBLIC_INTERFACE

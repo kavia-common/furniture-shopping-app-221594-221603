@@ -1,7 +1,7 @@
 import Blits from '@lightningjs/blits'
-import Header from '../components/Header'
-import FloatingCartButton from '../components/FloatingCartButton'
-import { AppStore } from '../store'
+import Header from '../components/Header.js'
+import FloatingCartButton from '../components/FloatingCartButton.js'
+import { AppStore } from '../store.js'
 
 /**
  * PUBLIC_INTERFACE

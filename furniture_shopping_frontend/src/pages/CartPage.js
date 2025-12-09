@@ -1,9 +1,9 @@
 import Blits from '@lightningjs/blits'
-import Header from '../components/Header'
-import CartView from '../components/CartView'
-import FloatingCartButton from '../components/FloatingCartButton'
-import CheckoutModal from '../components/CheckoutModal'
-import { AppStore } from '../store'
+import Header from '../components/Header.js'
+import CartView from '../components/CartView.js'
+import FloatingCartButton from '../components/FloatingCartButton.js'
+import CheckoutModal from '../components/CheckoutModal.js'
+import { AppStore } from '../store.js'
 
 /**
  * PUBLIC_INTERFACE

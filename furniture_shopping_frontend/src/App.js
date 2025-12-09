@@ -1,7 +1,7 @@
 import Blits from '@lightningjs/blits'
-import Home from './pages/Home'
-import ProductDetail from './pages/ProductDetail'
-import CartPage from './pages/CartPage'
+import Home from './pages/Home.js'
+import ProductDetail from './pages/ProductDetail.js'
+import CartPage from './pages/CartPage.js'
 
 /**
  * PUBLIC_INTERFACE

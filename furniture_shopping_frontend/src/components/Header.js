@@ -1,5 +1,5 @@
 import Blits from '@lightningjs/blits'
-import theme from '../theme'
+import theme from '../theme.js'
 
 export default Blits.Component('Header', {
   props: ['title'],
