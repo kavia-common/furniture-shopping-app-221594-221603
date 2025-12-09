@@ -4,89 +4,76 @@ import theme from '../theme'
 export default Blits.Component('ProductCard', {
   props: ['item'],
   state() {
-    // Precompute static layout values once for the component instance
-    const cardW = theme.sizes.productCardW
-    const cardH = theme.sizes.productCardH
-    const imgH = theme.sizes.productImageH
-    const nameY = imgH + 16
-    const priceY = imgH + 60
-    const textColor = theme.colors.text
-    const priceColor = theme.colors.primary
-    const bgColor = theme.colors.background
-    const surface = 0xffffffff
-
+    // Precompute all values to avoid inline expressions in the template
     return {
-      // interaction
-      hover: false,
-      alphaVal: 0.98,
-      // layout tokens
-      cardW,
-      cardH,
-      imgH,
-      nameY,
-      priceY,
-      textColor,
-      priceColor,
-      bgColor,
-      surface,
-      // data projections kept simple for template binding
+      cardW: theme.sizes.productCardW,
+      cardH: theme.sizes.productCardH,
+      imgH: theme.sizes.productImageH,
+      nameY: theme.sizes.productImageH + 16,
+      priceY: theme.sizes.productImageH + 60,
+      textColor: theme.colors.text,
+      priceColor: theme.colors.primary,
+      bgColor: theme.colors.background,
+      surface: 0xffffffff,
+
+      // Interaction visuals
+      alphaVal: 1,
+      scale: 1,
+
+      // Data projections
       imageSrc: '',
+      imageAlpha: 0,
+      placeholderAlpha: 1,
+      placeholderText: 'Product',
+      placeholderTextColor: 0x111827ff,
       nameText: '',
-      priceText: '$0'
+      priceText: '$0',
     }
   },
   watchers: {
-    // When prop item changes, map to simple state fields for template
+    // Map props.item into flat state for simple ${...} bindings
     item(newVal) {
-      if (newVal && typeof newVal === 'object') {
-        this.imageSrc = newVal.image ? String(newVal.image) : ''
-        this.nameText = newVal.name ? String(newVal.name) : ''
-        const priceVal = (newVal.price != null && !Number.isNaN(Number(newVal.price))) ? Number(newVal.price) : 0
-        // Avoid complex template expressions by formatting here
-        this.priceText = '$' + priceVal
-      } else {
-        this.imageSrc = ''
-        this.nameText = ''
-        this.priceText = '$0'
-      }
+      const obj = (newVal && typeof newVal === 'object') ? newVal : {}
+      const hasImg = !!obj.image
+      this.imageSrc = hasImg ? String(obj.image) : ''
+      this.imageAlpha = hasImg ? 1 : 0
+      this.placeholderAlpha = hasImg ? 0 : 1
+      this.nameText = obj.name ? String(obj.name) : ''
+      const priceVal = (obj.price != null && !Number.isNaN(Number(obj.price))) ? Number(obj.price) : 0
+      this.priceText = '$' + priceVal
+      this.placeholderText = this.nameText || 'Product'
     }
   },
   template: `
-    <Element :w="$cardW" :h="$cardH" :color="$surface" :alpha="$alphaVal">
-      <Element x="0" y="0" :w="$cardW" :h="$imgH" :color="$bgColor">
-        <Element x="0" y="0" :w="$cardW" :h="$imgH">
-          <!-- If image is available, render it; otherwise, draw a solid placeholder block -->
-          <Element :alpha="$imageSrc ? 1 : 0" :src="$imageSrc" :w="$cardW" :h="$imgH" />
-          <Element :alpha="$imageSrc ? 0 : 1" :w="$cardW" :h="$imgH" :color="0x2563EB22">
-            <Text x="20" y="20" :content="$nameText || 'Product'" size="24" :color="0x111827ff" />
-          </Element>
+    <Element :w="\${cardW}" :h="\${cardH}" :color="\${surface}" :alpha="\${alphaVal}">
+      <Element x="0" y="0" :w="\${cardW}" :h="\${imgH}" :color="\${bgColor}">
+        <Element :alpha="\${imageAlpha}" :src="\${imageSrc}" :w="\${cardW}" :h="\${imgH}" />
+        <Element :alpha="\${placeholderAlpha}" :w="\${cardW}" :h="\${imgH}" :color="0x2563EB22">
+          <Text x="20" y="20" :content="\${placeholderText}" size="24" :color="\${placeholderTextColor}" />
         </Element>
       </Element>
-      <Text x="20" :y="$nameY" :content="$nameText" :color="$textColor" size="28" />
-      <Text x="20" :y="$priceY" :content="$priceText" :color="$priceColor" size="26" />
+      <Text x="20" :y="\${nameY}" :content="\${nameText}" :color="\${textColor}" size="28" />
+      <Text x="20" :y="\${priceY}" :content="\${priceText}" :color="\${priceColor}" size="26" />
     </Element>
   `,
   input: {
     enter() {
       const it = this.item
       if (it && it.id != null) {
-        // Build route string without inline braces in template
         this.$router.to('/product/' + String(it.id))
       }
     }
   },
   onInit() {
-    // initialize derived fields from initial prop
-    this.$watchers.item.call(this, this.item)
+    // Initialize from initial props
+    this.$watchers.item && this.$watchers.item.call(this, this.item)
   },
   onFocus() {
-    this.hover = true
     this.alphaVal = 1
     this.scale = 1.02
   },
   onUnfocus() {
-    this.hover = false
-    this.alphaVal = 0.98
-    this.scale = 1.0
+    this.alphaVal = 1
+    this.scale = 1
   }
 })

@@ -9,37 +9,34 @@ import { AppStore } from '../store'
 export default Blits.Component('Home', {
   components: { Header, ProductCard, FloatingCartButton, CheckoutModal },
   template: `
-    <Element :w="$w" :h="$h" :color="0xf9fafbff">
-      <Header :title="$headerTitle" />
-      <Element :x="$contentX" :y="$contentY" :w="$contentW" :h="$contentH" :color="0x00000000">
-        <Text :x="$loadingX" :y="$loadingY" :content="$loadingText" size="32" :color="$loadingColor" />
-        <Text :x="$errorX" :y="$errorY" :content="$errorText" size="28" :color="$errorColor" />
-        <Element :alpha="$showEmpty ? 1 : 0" :x="$emptyX" :y="$emptyY" :w="$emptyW" :h="$emptyH" :color="$emptyBg">
-          <Text :x="$emptyTextX" :y="$emptyTextY" :content="$emptyText" size="30" :color="$emptyTextColor" />
+    <Element :w="\${w}" :h="\${h}" :color="0xf9fafbff">
+      <Header :title="\${headerTitle}" />
+      <Element :x="\${contentX}" :y="\${contentY}" :w="\${contentW}" :h="\${contentH}" :color="0x00000000">
+        <Text :x="\${loadingX}" :y="\${loadingY}" :content="\${loadingText}" size="32" :color="\${loadingColor}" />
+        <Text :x="\${errorX}" :y="\${errorY}" :content="\${errorText}" size="28" :color="\${errorColor}" />
+        <Element :alpha="\${emptyAlpha}" :x="\${emptyX}" :y="\${emptyY}" :w="\${emptyW}" :h="\${emptyH}" :color="\${emptyBg}">
+          <Text :x="\${emptyTextX}" :y="\${emptyTextY}" :content="\${emptyText}" size="30" :color="\${emptyTextColor}" />
         </Element>
 
-        <Element :for="(it, index) in $layoutItems" :x="$it.x" :y="$it.y">
-          <ProductCard :item="$it" />
+        <Element :for="(it, index) in \${layoutItems}" :x="\${it.x}" :y="\${it.y}">
+          <ProductCard :item="\${it}" />
         </Element>
       </Element>
 
       <FloatingCartButton />
-      <CheckoutModal :alpha="$checkoutAlpha" />
+      <CheckoutModal :alpha="\${checkoutAlpha}" />
     </Element>
   `,
   state() {
-    // Precompute layout tokens and simple strings for template bindings only
-    const headerTitle = 'Ocean Furniture'
-    const contentX = 32
-    const contentY = 132
-    const contentPadW = 64
-    const contentPadH = 164
-
     return {
       // ui tokens
-      headerTitle,
-      contentX, contentY,
-      contentPadW, contentPadH,
+      w: 0,
+      h: 0,
+      headerTitle: 'Ocean Furniture',
+      contentX: 32,
+      contentY: 132,
+      contentPadW: 64,
+      contentPadH: 164,
       contentW: 0,
       contentH: 0,
 
@@ -52,7 +49,7 @@ export default Blits.Component('Home', {
       errorX: 0, errorY: 40,
       errorColor: 0xef4444ff,
 
-      showEmpty: false,
+      emptyAlpha: 0,
       emptyText: 'No products available',
       emptyTextColor: 0x111827ff,
       emptyBg: 0xffffffff,
@@ -82,19 +79,17 @@ export default Blits.Component('Home', {
     },
     // reflect loading and error from store by computing strings (no ternaries in template)
     products(newVal) {
-      // Grid positioning precomputed in script
       const colW = theme.sizes.productCardW + 30
       const rowH = theme.sizes.productCardH + 30
       const cols = 3
-      const laid = (newVal || []).map((p, i) => {
+      const list = Array.isArray(newVal) ? newVal : []
+      const laid = list.map((p, i) => {
         const col = i % cols
         const row = Math.floor(i / cols)
         return { id: p.id, name: p.name, price: p.price, image: p.image, x: col * colW, y: 40 + row * rowH }
       })
       this.layoutItems = laid
-
-      // empty state visibility
-      this.showEmpty = (Array.isArray(newVal) && newVal.length === 0)
+      this.emptyAlpha = (list.length === 0) ? 1 : 0
     },
     // compute modal alpha
     checkoutOpen(isOpen) {
@@ -121,12 +116,14 @@ export default Blits.Component('Home', {
         this.errorText = e ? ('Error: ' + String(e)) : ''
 
         // Checkout state
-        this.checkoutOpen = !!AppStore.state.checkoutOpen
+        this.checkoutOpen = AppStore.state.checkoutOpen ? 1 : 0
       })
     ]
   },
   async onInit() {
     // initialize dimensions based on initial w/h
+    this.w = this.$w
+    this.h = this.$h
     this.$watchers.w && this.$watchers.w.call(this, this.$w)
     this.$watchers.h && this.$watchers.h.call(this, this.$h)
 

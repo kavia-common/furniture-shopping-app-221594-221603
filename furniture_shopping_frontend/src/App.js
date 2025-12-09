@@ -13,15 +13,16 @@ import CartPage from './pages/CartPage'
  *  - '/cart' -> CartPage
  */
 export default Blits.Application({
+  // Keep as JS template literal and escape Blits placeholders with a backslash
   template: `
-    <Element :w="$w" :h="$h" :color="0xf9fafbff">
+    <Element :w="\${w}" :h="\${h}" :color="0xf9fafbff">
       <RouterView />
-      <!-- Temporary debug banner to avoid blank screen and show product count -->
-      <Element :x="10" :y="$h - 40" :w="$w - 20" h="30" :color="0x00000055">
-        <Text x="12" y="4" :content="$debugText" size="20" :color="0xffffffff" />
+      <!-- Fail-safe visible banner -->
+      <Element :x="\${debugX}" :y="\${debugY}" :w="\${debugW}" :h="\${debugH}" :color="0x00000055">
+        <Text :x="\${debugTextX}" :y="\${debugTextY}" :content="\${debugText}" size="20" :color="0xffffffff" />
       </Element>
-      <Element :alpha="$hasError ? 1 : 0" :w="$w" :h="$h" :color="0x00000088">
-        <Text x="40" y="40" :content="'Something went wrong. Please try again.'" size="36" :color="0xffffffff" />
+      <Element :alpha="\${errorAlpha}" :w="\${w}" :h="\${h}" :color="0x00000088">
+        <Text x="40" y="40" :content="\${errorMessage}" size="36" :color="0xffffffff" />
       </Element>
     </Element>
   `,
@@ -31,32 +32,60 @@ export default Blits.Application({
     { path: '/cart', component: CartPage }
   ],
   state() {
-    return { hasError: false, debugText: 'App starting…' }
+    return {
+      // App frame
+      w: 0,
+      h: 0,
+      // Debug banner geometry and content
+      debugX: 10,
+      debugY: 680,
+      debugW: 1260,
+      debugH: 30,
+      debugTextX: 12,
+      debugTextY: 4,
+      debugText: 'App Loaded • Products: 0',
+      // Error layer
+      errorAlpha: 0,
+      errorMessage: 'Something went wrong. Please try again.'
+    }
+  },
+  watchers: {
+    w(newW) {
+      if (typeof newW === 'number' && newW > 0) {
+        this.debugW = newW - 20
+      }
+    },
+    h(newH) {
+      if (typeof newH === 'number' && newH > 0) {
+        this.debugY = newH - 40
+      }
+    }
   },
   subscriptions() {
-    // update debug banner with product count and current route
     const updateDebug = () => {
       try {
         const count = this.$store?.state?.products?.length ?? 0
         const route = this.$router?.current?.path || '/'
-        this.debugText = `App started • Route: ${route} • Products: ${count}`
-      } catch {
-        this.debugText = 'App started'
+        this.debugText = 'App Loaded • Route: ' + String(route) + ' • Products: ' + String(count)
+      } catch (err) {
+        // Fallback if store/router not ready
+        this.debugText = 'App Loaded'
       }
     }
     updateDebug()
     return [
-      // tick on route change
       this.$router?.subscribe?.(() => updateDebug()),
-      // if a global store exists, subscribe; guarded to avoid runtime errors
       this.$store?.subscribe?.(() => updateDebug())
     ].filter(Boolean)
   },
   onError(e) {
-    this.hasError = true
-    // PUBLIC_INTERFACE: log error for debugging environments
-    try { console.error('App error:', e) } catch { /* ignore logging errors */ }
-    // restore UI after brief time
-    this.$setTimeout(() => { this.hasError = false }, 2000)
+    this.errorAlpha = 1
+    try {
+      // PUBLIC_INTERFACE
+      console.error('App error:', e)
+    } catch (logErr) {
+      // ignore logging errors
+    }
+    this.$setTimeout(() => { this.errorAlpha = 0 }, 2000)
   }
 })
