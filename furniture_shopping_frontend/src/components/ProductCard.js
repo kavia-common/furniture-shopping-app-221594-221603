@@ -18,6 +18,7 @@ export default Blits.Component('ProductCard', {
     return {
       // interaction
       hover: false,
+      alphaVal: 0.98,
       // layout tokens
       cardW,
       cardH,
@@ -51,7 +52,7 @@ export default Blits.Component('ProductCard', {
     }
   },
   template: `
-    <Element :w="$cardW" :h="$cardH" :color="$surface" :alpha="$hover ? 1 : 0.98">
+    <Element :w="$cardW" :h="$cardH" :color="$surface" :alpha="$alphaVal">
       <Element x="0" y="0" :w="$cardW" :h="$imgH" :color="$bgColor">
         <Element x="0" y="0" :w="$cardW" :h="$imgH">
           <Element :src="$imageSrc" :w="$cardW" :h="$imgH" />
@@ -76,10 +77,12 @@ export default Blits.Component('ProductCard', {
   },
   onFocus() {
     this.hover = true
+    this.alphaVal = 1
     this.scale = 1.02
   },
   onUnfocus() {
     this.hover = false
+    this.alphaVal = 0.98
     this.scale = 1.0
   }
 })
