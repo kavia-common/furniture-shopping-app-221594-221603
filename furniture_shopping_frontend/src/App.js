@@ -17,9 +17,10 @@ export default Blits.Application({
       </Element>
     </Element>
   `,
+  // Blits Router: simple route definitions
   routes: [
     { path: '/', component: Home },
-    { path: '/product/:id', component: ProductDetail, options: { props: ['id'] } },
+    { path: '/product/:id', component: ProductDetail },
     { path: '/cart', component: CartPage }
   ],
   state() {

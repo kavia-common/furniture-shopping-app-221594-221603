@@ -5,6 +5,7 @@ import { AppStore } from '../store'
 
 export default Blits.Component('ProductDetail', {
   components: { Header, FloatingCartButton },
+  // PUBLIC_INTERFACE
   props: ['id'],
   template: `
     <Element :w="$w" :h="$h" :color="0xf9fafbff">

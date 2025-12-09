@@ -22,7 +22,11 @@ export default Blits.Component('Header', {
       shopText: theme.colors.text,
       cartText: theme.colors.text,
       // title text resolved in script
-      headerTitle: 'Furniture Shop'
+      headerTitle: 'Furniture Shop',
+      // layout
+      borderY: theme.sizes.headerH - 2,
+      h: theme.sizes.headerH,
+      w: 0,
     }
   },
   watchers: {
@@ -45,7 +49,7 @@ export default Blits.Component('Header', {
   },
   template: `
     <Element :w="$w" :h="$h" :color="$surface">
-      <Element x="0" :y="$h - 2" :w="$w" h="2" :color="$border" />
+      <Element x="0" :y="$borderY" :w="$w" h="2" :color="$border" />
       <Text :x="$paddingX" y="30" :content="$headerTitle" :color="$textColor" size="36" />
 
       <Element :x="$w - 320" y="20" w="300" h="60">
@@ -78,6 +82,7 @@ export default Blits.Component('Header', {
   onInit() {
     this.h = theme.sizes.headerH
     this.w = this.$w || 1920
+    this.borderY = this.h - 2
     // initialize title and hover dependent colors
     this.$watchers.title.call(this, this.title)
     this.$watchers.hoverShop.call(this, this.hoverShop)

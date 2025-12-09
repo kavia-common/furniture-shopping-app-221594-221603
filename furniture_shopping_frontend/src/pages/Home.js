@@ -23,7 +23,7 @@ export default Blits.Component('Home', {
           <Text :x="$emptyTextX" :y="$emptyTextY" :content="$emptyText" size="30" :color="$emptyTextColor" />
         </Element>
 
-        <Element :for="(item, index) in $layoutItems" :x="$item.x" :y="$item.y" :key="$item.id">
+        <Element :for="(item, index) in $layoutItems" :key="$item.id" :x="$item.x" :y="$item.y">
           <ProductCard :item="$item" />
         </Element>
       </Element>
