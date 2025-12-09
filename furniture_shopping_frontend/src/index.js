@@ -1,8 +1,20 @@
 import Blits from '@lightningjs/blits'
-import App from './App.js'
+import App from './App'
 
+/**
+ * PUBLIC_INTERFACE
+ * Launch the Furniture Shopping App.
+ */
 Blits.Launch(App, 'app', {
-  w: 1920,
-  h: 1080,
-  debugLevel: 1,
+  w: 1280,
+  h: 720,
+  // Key mappings for desktop testing
+  keys: {
+    up: 38,
+    down: 40,
+    left: 37,
+    right: 39,
+    enter: 13,
+    back: 8
+  }
 })

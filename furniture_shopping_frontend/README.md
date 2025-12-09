@@ -1,49 +1,54 @@
-# lightningjs
+# Furniture Shopping Frontend (LightningJS)
 
-### lightningjs
+A simple furniture shopping demo built with LightningJS (Blits). It showcases:
+- Home page with product grid
+- Product detail view
+- Cart view with quantities and removal
+- Checkout modal with mock order placement
+- Global store for state management
+- Routing with dynamic product id
+- Ocean Professional theme styling
 
+## Environment
 
-Welcome to the _lightningjs_ Lightning 3 Blits App!
+These variables are optional. If not set, the app will use local mock data:
+- VITE_API_BASE
+- VITE_BACKEND_URL
 
-### Getting started
+Other envs used by the container:
+- VITE_FRONTEND_URL, VITE_WS_URL, VITE_NODE_ENV, VITE_NEXT_TELEMETRY_DISABLED, VITE_ENABLE_SOURCE_MAPS, VITE_PORT, VITE_TRUST_PROXY, VITE_LOG_LEVEL, VITE_HEALTHCHECK_PATH, VITE_FEATURE_FLAGS, VITE_EXPERIMENTS_ENABLED
 
-Follow the steps below to get your Lightning 3 Blits App up and running in no time.
+## Assets
 
-#### IDE setup
+Place product images under `public/assets/furniture/`:
+- sofa1.jpg
+- chair1.jpg
+- table1.jpg
+- bookshelf1.jpg
+- dining1.jpg
+- lamp1.jpg
 
-It is highly recommended to install the Blits [VS-code extension](https://marketplace.visualstudio.com/items?itemName=LightningJS.lightning-blits) which will give you template highlighting and improved autocompletion.
+Update `src/data/mockData.js` if you change filenames.
 
-#### Project setup
+## Scripts
 
-Run the following command to install the dependencies of your App:
-
+Install dependencies:
 ```sh
 npm install
 ```
 
-#### Build and run in development mode
-
-Run your App in development mode:
-
+Run in development:
 ```sh
 npm run dev
 ```
 
-This command uses Vite to fire up a local server, with Hot Reloading support. Visit the provided link in your web browser to see the App in action.
-
-#### Build the App for production
-
-Create an optimized and minified version of your App:
-
+Build for production:
 ```sh
 npm run build
 ```
 
-This will create a production version of the app in the `dist` folder.
+## Tech
 
-
-### Resources
-
-- [Blits documentation](https://lightningjs.io/v3-docs/blits/getting_started/intro.html) - official documentation
-- [Blits Example App](https://blits-demo.lightningjs.io/?source=true) - a great reference to learn by example
-- [Blits Components](https://lightningjs.io/blits-components.html) - off-the-shelf, basic and performant reference components
+- LightningJS v3 (Blits) with WebGL rendering
+- Vite for development/build
+- Router-based navigation and a simple global store
