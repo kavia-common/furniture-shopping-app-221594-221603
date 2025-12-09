@@ -1,6 +1,6 @@
 import Blits from '@lightningjs/blits'
-import theme from '../theme'
-import { AppStore } from '../store'
+import theme from '../theme.js'
+import { AppStore } from '../store.js'
 
 export default Blits.Component('CheckoutModal', {
   state() {
